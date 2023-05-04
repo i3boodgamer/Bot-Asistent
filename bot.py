@@ -6,9 +6,8 @@ from aiogram.types import CallbackQuery
 from button import group,student,days_nt,subscribe_b
 from datetime import datetime,date
 from mailing import DataBase
+from token_1 import bot
 
-
-bot = Bot(token='5749034666:AAGz8A7ON370dtBs_RwsaLTblhZ_ic5JOl0')
 dp=Dispatcher(bot)
 db=DataBase('database.db')
 
