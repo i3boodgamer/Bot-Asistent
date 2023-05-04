@@ -37,6 +37,7 @@ pip-log.txt
 pip-delete-this-directory.txt
 token_1.py
 test.py
+database.db
 
 # Unit test / coverage reports
 htmlcov/
