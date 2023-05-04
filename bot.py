@@ -12,19 +12,6 @@ dp=Dispatcher(bot)
 db=DataBase('database.db')
 
 
-day=date.today()
-days=day.weekday()+1
-daysnt=1
-sms=''
-
-count=back=user_id=chat_id=group_uni=0
-
-
-    
-    
-
-
-
 async def back_def(h):
     global back
     back=h
@@ -204,7 +191,7 @@ async def open_rasp(message:types.Message):
 
 @dp.message_handler(lambda message: message.text == "На сегодня")
 async def now_day(message: types.Message):
-    global daysnt,days,group_uni,count,sms,back
+    global daysnt,days,group_uni,count,back
     print(message.message_id, "На сегодня")
 
     if(days==7 and daysnt==2 and count==0):
@@ -375,6 +362,9 @@ async def subscribe_callback(callback_query: CallbackQuery):
 
 
 if __name__ == "__main__":
+    day=date.today()
+    days=day.weekday()+1
+    daysnt=1
     loop = asyncio.get_event_loop()
     loop.create_task(schedule_sms())
     executor.start_polling(dp, skip_updates=True,loop=loop)
