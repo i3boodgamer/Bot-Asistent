@@ -2,7 +2,7 @@ import sqlite3 as sq
 con=sq.connect("database.db")
 cur=con.cursor()
 
-file1=open("Raspisan_prepod\Четвертков Егор Васильевич.txt",'r',encoding='utf-8') 
+file1=open("Raspisan_prepod\Буинцев Владимир Николаевич.txt",'r',encoding='utf-8') 
 raspos={
     'prepod':0,
     'cht':0,
@@ -79,6 +79,7 @@ while True:
                         result_id.append((cur.execute(f'SELECT groups_uni.group_id FROM groups_uni WHERE groups_uni.groups_uni = "{group_id[i]}"').fetchone())[0])
                     i+=1
                     raspos['group']=result_id
+                    
             else:
                raspos['group']=[]
                raspos['group'].append(-1)

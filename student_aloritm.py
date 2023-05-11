@@ -72,12 +72,12 @@ while True:
         mas=[]
         for line in raspos:
             mas.append(raspos[line])
-        #print(mas)
+        print(mas)
         cur.execute("INSERT INTO object(group_id, week_id, day_id, para_id, time_id, object, people, kabinet) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", mas)
-       # con.commit()
+        con.commit()
     
 result=cur.execute("SELECT `user_id`,`group` FROM `user` WHERE `subscribe` = 1 and `group`!='NULL' and `active`=1").fetchall()
-print(result[0][0])
+
 
 file1.close
 con.close()
