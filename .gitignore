@@ -37,6 +37,9 @@ database.db
 pip-log.txt
 pip-delete-this-directory.txt
 token_1.py
+schedule_student.py
+schedule_teacher.py
+
 
 
 # Unit test / coverage reports

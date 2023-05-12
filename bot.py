@@ -3,143 +3,20 @@ import sqlite3 as sq
 from aiogram import types,executor
 from aiogram.dispatcher.filters import Text
 from aiogram.types import CallbackQuery
-from button import group,student,days_nt,subscribe_b,prepod_name_button,days_nt_person
+from button import group, people,daysSheduleButtonStudent,subscribeButton,teacherNameButton,daysSheduleButtonTeacher
 from datetime import datetime,date
 from token_1 import bot,db,dp
+# from schedule_teacher import Teacher
+# from schedule_student import Student
 
-class Prepod:
-    async def back_def(h):
-        global back
-        back=h
-
-    async def group_def(group):
-        global group_uni
-        
-
-    async def shedul_week(week_id,prepod_id):
-        with sq.connect("database.db") as con:
-            cur=con.cursor()
-            text=cur.execute(f"""SELECT days.day, groups_uni.groups_uni, object_prepod.para_id, object_prepod.time_id,object_prepod.kab
-FROM groups_uni,week, days, prepod
-JOIN object_prepod ON groups_uni.group_id = object_prepod.group_id and week.week_id=object_prepod.week_id and days.day_id=object_prepod.day_id and prepod.ID_prepod=object_prepod.prepod_id
-WHERE (days.day_id=1 or days.day_id=2 or days.day_id=3 or days.day_id=4 or days.day_id=5) and week.week_id={week_id} and prepod.ID_prepod={prepod_id}""").fetchall()
-            t3=""
-            d=g=d_t=d_g=i=0
-            mas=['','','','','','']
-            mas_nt=[0,0,0,0,0]
-
-            while text!=None and i<len(text):
-                    if(text[i][0]=='Понедельник'): mas_nt[0]+=1
-                    elif(text[i][0]=='Вторник'): mas_nt[1]+=1
-                    elif(text[i][0]=='Среда'): mas_nt[2]+=1
-                    elif(text[i][0]=='Четверг'): mas_nt[3]+=1
-                    elif(text[i][0]=='Пятница'): mas_nt[4]+=1
-                    i+=1
-            
-
-            
-            
-            i=0
-            t4=""
-            for t in text:
-                    if(t[1]=="-1" and mas_nt[d_g]==0):
-                            t3+="Нету пар"+"\n"
-                            continue 
-                    if(t[0]!=d):
-                            d=t[0]
-                            t3+="# "*15+"\n"
-                            t3+="\n"+f"<b>{t[0]}</b>"+"\n"
-                            i=0
-                            para=0
-
-                    if(t[0]=='Понедельник'): d_g=0
-                    elif(t[0]=='Вторник'): d_g=1
-                    elif(t[0]=='Среда'): d_g=2
-                    elif(t[0]=='Четверг'): d_g=3
-                    elif(t[0]=='Пятница'): d_g=4
-                    count_par=(cur.execute(f"""SELECT count(para_id)
-    FROM groups_uni,week, days, prepod
-    JOIN object_prepod ON groups_uni.group_id = object_prepod.group_id and week.week_id=object_prepod.week_id and days.day_id=object_prepod.day_id and prepod.ID_prepod=object_prepod.prepod_id
-    WHERE days.day_id={d_g+1}  and week.week_id={week_id} and prepod.ID_prepod={prepod_id} and para_id={t[2]}""").fetchone())[0]
-                    
-                    
-                    
-                    if(mas_nt[d_g]!=0):
-                            if(t[2]!=d_t):
-                                    d_t=t[2]
-                                    mas[t[2]-1]=t[1]
-                            elif d_t==t[2]:
-                                    mas[t[2]-1]+=', '+t[1]
-                            i+=1
-                            if i<count_par:
-                                    continue
-                            else:
-                                    i=0
-                    if(len(mas[t[2]-1].split(", "))>1 and para!=t[2]):
-                            para=t[2]
-                            t4=f"<i>Пара {t[2]}</i> <u>{t[3]}</u>\n ❗<code>{mas[t[2]-1]}</code>❗\n 🚪{t[4]}🚪\n"
-                    elif(len(mas[t[2]-1].split(", "))==1 and para!=t[2]):
-                            t4=f"<i>Пара {t[2]}</i> <u>{t[3]}</u>\n ❗<code>{t[1]}</code>❗\n 🚪{t[4]}🚪\n"
-                            para=t[2]
-                    g+=1
-                    t3+=t4+"\n"
-
-            t3+="# "*15+"\n"
-            return t3
-    
-    async def shedul_day(day_id,week_id,prepod_id):
-        with sq.connect("database.db") as con:
-            cur=con.cursor()
-            text=cur.execute(f"""SELECT object_prepod.para_id,groups_uni.groups_uni, object_prepod.kab,object_prepod.time_id FROM groups_uni,week,days,prepod
-JOIN object_prepod ON groups_uni.group_id = object_prepod.group_id and week.week_id=object_prepod.week_id and days.day_id=object_prepod.day_id and prepod.ID_prepod=object_prepod.prepod_id
-WHERE days.day_id={day_id}  and week.week_id={week_id} and prepod.ID_prepod={prepod_id}
-            """).fetchall()
-
-            i=0
-            d=0
-            
-            mas=['','','','','','']
-            while text!=None and i<len(text):
-                    if(text[i][0]!=d):
-                            d=text[i][0]
-                            mas[text[i][0]-1]=text[i][1]
-                            
-                    else:
-                            mas[text[i][0]-1]+=', '+text[i][1]
-                    i+=1
-            t3=""
-            para=0
-            
-            if len(text)>0:
-                for t in text:
-                    t1=''
-                    
-                    if(t[1]=="-1"):
-                        t3+="Нету пар"+"\n"
-                        continue 
-                    if(len(mas[t[0]-1].split(", "))>1 and para!=t[0]):
-                        para=t[0]
-                        t1=f"<i>Пара {t[0]}</i> <u>{t[3]}</u>\n ❗<code>{mas[t[0]-1]}</code>❗\n 🚪{t[2]}"
-                    elif(len(mas[t[0]-1].split(", "))==1 and para!=t[0]):
-                        t1=f"<i>Пара {t[0]}</i> <u>{t[3]}</u>\n ❗<code>{t[1]}</code>❗\n 🚪{t[2]}🚪\n"
-                        para=t[0]
-                            
-                    t3+=t1+"\n"
-                    
-            else:
-                t3="Нету пар!"
-            return t3
-                
 class Student:
-    async def back_def(h):
-        global back
-        back=h
-    async def group_def(group):
-        global group_uni
+    async def infoGroupId(group):
+        global idGroup
         with sq.connect("database.db") as con:
             cur=con.cursor()
-            result=cur.execute(f'SELECT groups_uni.group_id FROM groups_uni WHERE groups_uni.groups_uni = "{group}"').fetchone()
-            group_uni=result[0]
+            idGroup=(cur.execute(f'SELECT groups_uni.group_id FROM groups_uni WHERE groups_uni.groups_uni = "{group}"').fetchone())[0]
+    
+   
     async def shedul_week(week_id,group_id):
         with sq.connect("database.db") as con:
             cur=con.cursor()
@@ -147,394 +24,423 @@ class Student:
             FROM groups_uni,week,days
             JOIN object ON groups_uni.group_id = object.group_id and week.week_id=object.week_id and days.day_id=object.day_id
             WHERE (days.day_id=1 or days.day_id=2 or days.day_id=3 or days.day_id=4 or days.day_id=5) and week.week_id={week_id} and groups_uni.group_id={group_id}""").fetchall()
-            d=''
-            t3=""
-            t4=""
+            currentDay=''
+            shedule=""
+            sheduleCurrentDay=""
             for t in text:
-                if(t[0]!=d):
-                    t3+="# "*20+"\n"
-                    d=t[0]
-                    t3+="\n"+f"<b>{t[0]}</b>"+"\n"
+                if(t[0]!=currentDay):
+                    shedule+="# "*20+"\n"
+                    currentDay=t[0]
+                    shedule+="\n"+f"<b>{t[0]}</b>"+"\n"
                 if(t[2]=="ЭЛЕКТИВНЫЕ КУРСЫ ПО ФИЗИЧЕСКОЙ КУЛЬТУРЕ И СПОРТУ"):
-                        t3+=f"<i>Пара {t[1]}</i> <u>{t[4]}</u>"+"\n "+f"❗️<code>{t[2]}</code>❗️"+"\n"+"\n"
+                        shedule+=f"<i>Пара {t[1]}</i> <u>{t[4]}</u>"+"\n "+f"❗️<code>{t[2]}</code>❗️"+"\n"+"\n"
                         continue
                 if(t[2]=="День самостоятельной работы"):
-                    t3+=f"🖤<code>{t[2]}</code>🖤"+"\n"+"\n"
-                    t3+="# "*20+"\n"
+                    shedule+=f"🖤<code>{t[2]}</code>🖤"+"\n"+"\n"
+                    shedule+="# "*20+"\n"
                     break
-                t4 = f"<i>Пара {t[1]}</i> <u>{t[4]}</u>\n ❗<code>{t[2]}</code>❗\n 🚪{t[3]}🚪\n 👨‍🏫{t[5]}👨‍🏫\n"
-                t3+=t4+"\n"
-            return t3
+                sheduleCurrentDay = f"<i>Пара {t[1]}</i> <u>{t[4]}</u>\n ❗<code>{t[2]}</code>❗\n 🚪{t[3]}🚪\n 👨‍🏫{t[5]}👨‍🏫\n"
+                shedule+=sheduleCurrentDay+"\n"
+            return shedule
     
 
-    async def shedul_day(day_id,week_id,group_id):
+    async def shedulDay(day_id,week_id,group_id):
         with sq.connect("database.db") as con:
             cur=con.cursor()
             text=cur.execute(f"""SELECT object.para_id,object.object, object.kabinet,object.time_id,object.people FROM groups_uni,week,days
             JOIN object ON groups_uni.group_id = object.group_id and week.week_id=object.week_id and days.day_id=object.day_id 
             WHERE days.day_id={day_id}  and week.week_id={week_id} and groups_uni.group_id={group_id}
             """).fetchall()
-            t1=""
-            t3=""
+            sheduleCurrentDay=""
+            shedule=""
             for t in text:
                 if(t[1]=="ЭЛЕКТИВНЫЕ КУРСЫ ПО ФИЗИЧЕСКОЙ КУЛЬТУРЕ И СПОРТУ"):
-                    t3+=f"<i>Пара {t[0]}</i> <u>{t[3]}</u>"+"\n "+f"❗<code>{t[1]}</code>❗"+"\n"*2
+                    shedule+=f"<i>Пара {t[0]}</i> <u>{t[3]}</u>"+"\n "+f"❗<code>{t[1]}</code>❗"+"\n"*2
                     continue
                 if(t[1]=="День самостоятельной работы"):
-                    t3+=f"🖤<code>{t[1]}</code>🖤"+"\n"+"\n"
-                    t3+="# # # # # # # # # # # # # # # # #"+"\n"
+                    shedule+=f"🖤<code>{t[1]}</code>🖤"+"\n"+"\n"
+                    shedule+="# # # # # # # # # # # # # # # # #"+"\n"
                     continue
-                t1=f"""<i>Пара {t[0]}</i> <u>{t[3]}</u>
-            ❗<code>{t[1]}</code>❗
-            🚪{t[2]}🚪
-            👨‍🏫{t[4]}👨‍🏫
-                                                                                    """
-                t3+=t1+"\n"
-            return t3
+                sheduleCurrentDay=f"<i>Пара {t[0]}</i> <u>{t[3]}</u>\n ❗<code>{t[1]}</code>❗\n 🚪{t[2]}🚪\n 👨‍🏫{t[4]}👨‍🏫\n "
+                shedule+=sheduleCurrentDay+"\n"
+            return shedule
         
     
     async def sms():
         with sq.connect("database.db") as con:
             cur=con.cursor()
-            id_user=cur.execute("SELECT `user_id`,`group` FROM `user` WHERE `subscribe` = 1 and `group`!='NULL' and `active`=1").fetchall()
-            if(not id_user):
+            idUser=cur.execute("SELECT `user_id`,`group` FROM `user` WHERE `subscribe` = 1 and `group`!='NULL' and `active`=1").fetchall()
+            if(not idUser):
                 print("Нету пользователей, которые подписались на рассылку")
             else:
-                for i in id_user:
-                    user=i[0]
-                    gr=i[1]
+                for i in idUser:
                     try:
-                        await bot.send_message(user,text=await Student.shedul_day(days+1,daysnt,gr),parse_mode='HTML')
+                        await bot.send_message(i[0],text=await Student.shedulDay(day+1,week,i[1]),parse_mode='HTML')
                     except Exception as e:
-                        db.set_active(user,0)
-                        print(f"Пользователь {user} заблокировал чат-бота!: {e}")  
+                        db.set_active(i[0],0)
+                        print(f"Пользователь {i[0]} заблокировал чат-бота!: {e}")  
 
-    @dp.message_handler(Text(equals="Я Студент"))
-    async def open_kb_group(message:types.Message):
-        global student_,prepod_
-        student_=1
-        prepod_= 0
-        await Student.back_def(1)
-        await message.answer(text='Выберите группу', reply_markup=group)
+import sqlite3 as sq
+
+
+class Teacher:
+    idTeacher=0
+
+    async def infoIDTeacher(nameTeacherBD: str):
+          global idTeacher
+          with sq.connect("database.db") as con:
+            cur=con.cursor()
+            idTeacher=(cur.execute(f'SELECT prepod.ID_prepod FROM prepod WHERE prepod.FIO= "{nameTeacherBD}"').fetchone())[0]
+
+    async def shedulWeek(week_id,prepod_id):
+        with sq.connect("database.db") as con:
+            cur=con.cursor()
+            text=cur.execute(f"""SELECT days.day, groups_uni.groups_uni, object_prepod.para_id, object_prepod.time_id,object_prepod.kab
+    FROM groups_uni,week, days, prepod
+    JOIN object_prepod ON groups_uni.group_id = object_prepod.group_id and week.week_id=object_prepod.week_id and days.day_id=object_prepod.day_id and prepod.ID_prepod=object_prepod.prepod_id
+    WHERE (days.day_id=1 or days.day_id=2 or days.day_id=3 or days.day_id=4 or days.day_id=5) and week.week_id={week_id} and prepod.ID_prepod={prepod_id}""").fetchall()
+
+            
+            
+            shedule=""
+            currentPara=dayID=i=currentDay=0
+            
+            groups=['','','','','','']
+            weekDaysCount=[0,0,0,0,0]
+
+            weekDays = ["Понедельник",'Вторник','Среда','Четверг','Пятница']
+            for item in text:
+                    weekDaysCount[weekDays.index(item[0])]+=1
+
+    
+            i=0
+            sheduleCurrentDay=""
+            for item in text:
+                    if(item[1]=="-1" and weekDaysCount[dayID]==0):
+                            shedule+="Нету пар"+"\n"
+                            continue 
+                    if(item[0]!=currentPara):
+                            currentPara=item[0]
+                            shedule+="# "*15+"\n"
+                            shedule+="\n"+f"<b>{item[0]}</b>"+"\n"
+                            i=0
+                            para=0
+                    dayID = int(weekDays.index(item[0]))
+                    
+                    countPara=(cur.execute(f"""SELECT count(para_id)
+    FROM groups_uni,week, days, prepod
+    JOIN object_prepod ON groups_uni.group_id = object_prepod.group_id and week.week_id=object_prepod.week_id and days.day_id=object_prepod.day_id and prepod.ID_prepod=object_prepod.prepod_id
+    WHERE days.day_id={dayID+1}  and week.week_id=1 and prepod.ID_prepod={prepod_id} and para_id={item[2]}""").fetchone())[0]
+                    
+
+                    
+                    if(weekDaysCount[dayID]!=0):
+                            if(item[2]!=currentDay):
+                                    currentDay=item[2]
+                                    groups[item[2]-1]=item[1]
+                            else:
+                                    groups[item[2]-1]+=', '+item[1]
+                            i+=1
+                            if i<countPara:
+                                    continue
+                            else:
+                                    i=0
+
+                    def printText (lesson, time, group, office):
+                            return f"<i>Пара {lesson}</i> <u>{time}</u>\n ❗<code>{group}</code>❗\n 🚪{office}🚪\n" 
+
+                    sheduleCurrentDay = printText(item[2],item[3], groups[item[2]-1] if (len(groups[item[2]-1].split(", "))>1 and para!=item[2]) else item[1] ,item[4])                
+
+                    para=item[2]        
+                    shedule+=sheduleCurrentDay+"\n"
+
+            
+            shedule+="# "*15+"\n"
+            return shedule
+    
+    async def shedulDay(day_id,week_id,prepod_id):
+        with sq.connect("database.db") as con:
+            cur=con.cursor()
+            text=cur.execute(f"""SELECT object_prepod.para_id,groups_uni.groups_uni, object_prepod.kab,object_prepod.time_id FROM groups_uni,week,days,prepod
+JOIN object_prepod ON groups_uni.group_id = object_prepod.group_id and week.week_id=object_prepod.week_id and days.day_id=object_prepod.day_id and prepod.ID_prepod=object_prepod.prepod_id
+WHERE days.day_id={day_id}  and week.week_id={week_id} and prepod.ID_prepod={prepod_id}
+            """).fetchall()
+
+            
+            currentPara=i=0
+            
+            groups=['','','','','','']
+            while text!=None and i<len(text):
+                    if(text[i][0]!=currentPara):
+                            currentPara=text[i][0]
+                            groups[text[i][0]-1]=text[i][1]
+                            
+                    else:
+                            groups[text[i][0]-1]+=', '+text[i][1]
+                    i+=1
+            shedule=""
+            para=0
+            
+            if len(text)>0:
+                for t in text:
+                    sheduleCurrentDay=''
+                    
+                    if(t[1]=="-1"):
+                        shedule+="Нету пар"+"\n"
+                        continue
+
+                    sheduleCurrentDay=f"<i>Пара {t[0]}</i> <u>{t[3]}</u>\n ❗<code>{groups[t[0]-1]}</code>❗\n 🚪{t[2]}\n" if(len(groups[t[0]-1].split(", "))>1 and para!=t[0]) else f"<i>Пара {t[0]}</i> <u>{t[3]}</u>\n ❗<code>{t[1]}</code>❗\n 🚪{t[2]}🚪\n"
+                    para=t[0]
+                    shedule+=sheduleCurrentDay+"\n"
+            else:
+                shedule="Нету пар!"
+            return shedule
+
+
+async def backDef(h):
+        global back
+        back=h
+
+async def infoSheduleGroup(group: str,message:types.Message):
+    await backDef(0)
+    print(group)
+    await Student.infoGroupId(group)
+    if db.count_verification(message.from_user.id)==0:
+        await message.answer(text="Хотите подписаться на нашу рассылку?", reply_markup=subscribeButton)
+    else:
+        await message.answer(text="На какой день хотите расписание?", reply_markup=daysSheduleButtonStudent)
+
+async def infoSheduleTeacher(nameTeaher: str,message:types.Message):
+    await message.answer(text="На какой день хотите расписание?", reply_markup=daysSheduleButtonTeacher)
+    await backDef(0)
+    await Teacher.infoIDTeacher(nameTeaher)
+
+
+
+        
+@dp.message_handler(Text(equals="Я Студент"))
+async def open_kb_group(message:types.Message):
+    global chooseStudent,chooseTeacher
+    chooseStudent=1
+    chooseTeacher= 0
+    await backDef(1)
+    await message.answer(text='Выберите группу', reply_markup=group)
 
 @dp.message_handler(Text(equals="Я Преподаватель"))
 async def open_kb_group(message:types.Message):
-    global student_,prepod_
-    student_=0
-    prepod_= 1
-    await Student.back_def(1)
-    await message.answer(text="Выберите преподавателя", reply_markup=prepod_name_button)
+    global chooseStudent,chooseTeacher
+    chooseStudent=0
+    chooseTeacher= 1
+    await backDef(1)
+    await message.answer(text="Выберите преподавателя", reply_markup=teacherNameButton)
 
 
 @dp.message_handler(Text(equals="Беланцева Д.Ю."))
 async def open_rasp_prepod(message:types.Message):
-    global prepod_name
-    await Student.back_def(0)
-    with sq.connect("database.db") as con:
-        cur=con.cursor()
-        prepod_name = (cur.execute(f'SELECT prepod.ID_prepod FROM prepod WHERE prepod.FIO= "Белавенцева Дарья Юрьевна"').fetchone())[0]
-        
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt_person)
+    await infoSheduleTeacher("Белавенцева Дарья Юрьевна",message)
 
 @dp.message_handler(Text(equals="Белый А. М."))
 async def open_rasp_prepod(message:types.Message):
-    global prepod_name
-    await Student.back_def(0)
-    with sq.connect("database.db") as con:
-        cur=con.cursor()
-        prepod_name = (cur.execute(f'SELECT prepod.ID_prepod FROM prepod WHERE prepod.FIO= "Белый Андрей Михайлович"').fetchone())[0]
-        
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt_person)
+    await infoSheduleTeacher("Белый Андрей Михайлович",message)
 
 @dp.message_handler(Text(equals="Богдановская Д. Е."))
 async def open_rasp_prepod(message:types.Message):
-    global prepod_name
-    await Student.back_def(0)
-    with sq.connect("database.db") as con:
-        cur=con.cursor()
-        prepod_name = (cur.execute(f'SELECT prepod.ID_prepod FROM prepod WHERE prepod.FIO="Богдановская Дарья Евгеньевна"').fetchone())[0]
-        
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt_person)
+    await infoSheduleTeacher("Богдановская Дарья Евгеньевна",message)
 
 @dp.message_handler(Text(equals="Буинцев В. Н."))
 async def open_rasp_prepod(message:types.Message):
-    global prepod_name
-    await Student.back_def(0)
-    with sq.connect("database.db") as con:
-        cur=con.cursor()
-        prepod_name = (cur.execute(f'SELECT prepod.ID_prepod FROM prepod WHERE prepod.FIO="Буинцев Владимир Николаевич"').fetchone())[0]
-        
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt_person)
+    await infoSheduleTeacher("Буинцев Владимир Николаевич",message)
 
 @dp.message_handler(Text(equals="Киселева Т. В."))
 async def open_rasp_prepod(message:types.Message):
-    global prepod_name
-    await Student.back_def(0)
-    with sq.connect("database.db") as con:
-        cur=con.cursor()
-        prepod_name = (cur.execute(f'SELECT prepod.ID_prepod FROM prepod WHERE prepod.FIO="Киселева Тамара Васильевна"').fetchone())[0]
-        
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt_person)
-
+    await infoSheduleTeacher("Киселева Тамара Васильевна",message)
 
 
 @dp.message_handler(Text(equals="Кожемяченко В. И."))
 async def open_rasp_prepod(message:types.Message):
-    global prepod_name
-    await Student.back_def(0)
-    with sq.connect("database.db") as con:
-        cur=con.cursor()
-        prepod_name = (cur.execute(f'SELECT prepod.ID_prepod FROM prepod WHERE prepod.FIO="Кожемяченко Вадим Иванович"').fetchone())[0]
-        
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt_person)
+    await infoSheduleTeacher("Кожемяченко Вадим Иванович",message)
 
 @dp.message_handler(Text(equals="Мартусевич Е. А."))
 async def open_rasp_prepod(message:types.Message):
-    global prepod_name
-    await Student.back_def(0)
-    with sq.connect("database.db") as con:
-        cur=con.cursor()
-        prepod_name = (cur.execute(f'SELECT prepod.ID_prepod FROM prepod WHERE prepod.FIO="Мартусевич Ефим Алесандрович"').fetchone())[0]
-        
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt_person)
+    await infoSheduleTeacher("Мартусевич Ефим Алесандрович",message)
     
 @dp.message_handler(Text(equals="Рыжих А. Ю."))
 async def open_rasp_prepod(message:types.Message):
-    global prepod_name
-    await Student.back_def(0)
-    with sq.connect("database.db") as con:
-        cur=con.cursor()
-        prepod_name = (cur.execute(f'SELECT prepod.ID_prepod FROM prepod WHERE prepod.FIO="Рыжих Алексей Юрьевич"').fetchone())[0]
-        
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt_person)
+    await infoSheduleTeacher("Рыжих Алексей Юрьевич",message)
 
 @dp.message_handler(Text(equals="Соловьева Ю. А."))
 async def open_rasp_prepod(message:types.Message):
-    global prepod_name
-    await Student.back_def(0)
-    with sq.connect("database.db") as con:
-        cur=con.cursor()
-        prepod_name = (cur.execute(f'SELECT prepod.ID_prepod FROM prepod WHERE prepod.FIO="Соловьева Юлия Александровна"').fetchone())[0]
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt_person)
+    await infoSheduleTeacher("Соловьева Юлия Александровна",message)
 
 @dp.message_handler(Text(equals="Четвертков Е. В."))
 async def open_rasp_prepod(message:types.Message):
-    global prepod_name
-    await Student.back_def(0)
-    with sq.connect("database.db") as con:
-        cur=con.cursor()
-        prepod_name = (cur.execute(f'SELECT prepod.ID_prepod FROM prepod WHERE prepod.FIO="Четвертков Егор Васильевич"').fetchone())[0]
-        await Student.back_def(0)
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt_person)
+    await infoSheduleTeacher("Четвертков Егор Васильевич",message)
     
     
     
-    
-
 @dp.message_handler(Text(equals="ИЭ-21"))
 async def open_rasp(message:types.Message):
-    await Student.back_def(0)
-    await Student.group_def("ИЭ-21")
-    if db.count_verification(message.from_user.id)==0:
-        await message.answer(text="Хотите подписаться на нашу рассылку?", reply_markup=subscribe_b)
-    else:
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt)
+    await infoSheduleGroup("ИЭ-21", message)
 
 @dp.message_handler(Text(equals="ИВТ-211"))
 async def open_rasp(message:types.Message):
-    await Student.back_def(0)
-    await Student.group_def("ИВТ-211")
-    if db.count_verification(message.from_user.id)==0:
-        await message.answer(text="Хотите подписаться на нашу рассылку?", reply_markup=subscribe_b)
-    else:
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt)
+    await infoSheduleGroup("ИВТ-211", message)
 
 @dp.message_handler(Text(equals="ИВТ-212"))
 async def open_rasp(message:types.Message):
-    await Student.back_def(0)
-    await Student.group_def("ИВТ-212")
-    if db.count_verification(message.from_user.id)==0:
-        await message.answer(text="Хотите подписаться на нашу рассылку?", reply_markup=subscribe_b)
-    else:
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt)
+    await infoSheduleGroup("ИВТ-212", message)
 
 @dp.message_handler(Text(equals="ИС-211"))
 async def open_rasp(message:types.Message):
-    await Student.back_def(0)
-    await Student.group_def("ИС-211")
-    if db.count_verification(message.from_user.id)==0:
-        await message.answer(text="Хотите подписаться на нашу рассылку?", reply_markup=subscribe_b)
-    else:
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt)
+    await infoSheduleGroup("ИС-211", message)
 
 @dp.message_handler(Text(equals="ИС-212"))
 async def open_rasp(message:types.Message):
-    await Student.back_def(0)
-    await Student.group_def("ИС-212")
-    if db.count_verification(message.from_user.id)==0:
-        await message.answer(text="Хотите подписаться на нашу рассылку?", reply_markup=subscribe_b)
-    else:
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt)
+    await infoSheduleGroup("ИС-212", message)
 
 @dp.message_handler(Text(equals="ИПМИ-21"))
 async def open_rasp(message:types.Message):
-    await Student.back_def(0)
-    await Student.group_def("ИПМИ-21")
-    if db.count_verification(message.from_user.id)==0:
-        await message.answer(text="Хотите подписаться на нашу рассылку?", reply_markup=subscribe_b)
-    else:
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt)
+    await infoSheduleGroup("ИПМИ-21", message)
 
 @dp.message_handler(Text(equals="ИП-21"))
 async def open_rasp(message:types.Message):
-    await Student.back_def(0)
-    await Student.group_def("ИП-21")
-    if db.count_verification(message.from_user.id)==0:
-        await message.answer(text="Хотите подписаться на нашу рассылку?", reply_markup=subscribe_b)
-    else:
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt)
+    await infoSheduleGroup("ИП-21", message)
 
 @dp.message_handler(Text(equals="ИАТ-21"))
 async def open_rasp(message:types.Message):
-    await Student.back_def(0)
-    await Student.group_def("ИАТ-21")
-    if db.count_verification(message.from_user.id)==0:
-        await message.answer(text="Хотите подписаться на нашу рассылку?", reply_markup=subscribe_b)
-    else:
-        await message.answer(text="На какой день хотите расписание?", reply_markup=days_nt)
+    await infoSheduleGroup("ИАТ-21", message)
 
 
 @dp.message_handler(lambda message: message.text == "На сегодня")
-async def now_day(message: types.Message):
-    global daysnt,days,group_uni,count,back,prepod_name,prepod_, student_
-    print(message.message_id, "На сегодня")
-    if prepod_ == 0:
-        if((days==7 or days==6) and daysnt==2 and count==0):
+async def nowDay(message: types.Message):
+    global week,count,back,chooseTeacher, chooseStudent, idGroup, idTeacher
+    
+    
+    if chooseTeacher == 0:
+        if((day==7 or day==6) and week==2 and count==0):
             count+=1
-            daysnt-=1
-        elif ((days==7 or days==6) and daysnt==1 and count==0):
+            week-=1
+        elif ((day==7 or day==6) and week==1 and count==0):
             count+=1
-            daysnt+=1
-        if(days+1==6 or days+1==7):
+            week+=1
+        if(day+1==6 or day+1==7):
             await message.answer(text='🔥Завтра выходной🔥')
             return
-        if days==7:
-            await message.answer(text=await Student.shedul_day(1,daysnt,group_uni),parse_mode='HTML')
+        if day==7:
+            await message.answer(text=await Student.shedulDay(1,week,idGroup),parse_mode='HTML')
             return
-        await message.answer(text=await Student.shedul_day(days,daysnt,group_uni),parse_mode='HTML')
+        await message.answer(text=await Student.shedulDay(day,week,idGroup),parse_mode='HTML')
         await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     else:
-        if((days==7 or days==6) and daysnt==2 and count==0):
+        if((day==7 or day==6) and week==2 and count==0):
             count+=1
-            daysnt-=1
-        elif ((days==7 or days==6) and daysnt==1 and count==0):
+            week-=1
+        elif ((day==7 or day==6) and week==1 and count==0):
             count+=1
-            daysnt+=1
-        if(days+1==6 or days+1==7):
+            week+=1
+        if(day+1==6 or day+1==7):
             await message.answer(text='🔥Завтра выходной🔥')
             return
-        if days==7:
-            await message.answer(text=await Prepod.shedul_day(1,daysnt,prepod_name),parse_mode='HTML')
+        if day==7:
+            await message.answer(text=await Teacher.shedulDay(1,week,idTeacher),parse_mode='HTML')
             return
-        await message.answer(text=await Prepod.shedul_day(days,daysnt,prepod_name),parse_mode='HTML')
+        await message.answer(text=await Teacher.shedulDay(day,week,idTeacher),parse_mode='HTML')
     
 
 
 
 @dp.message_handler(lambda message: message.text == "На завтра")
-async def next_day(message: types.Message):
-    global daysnt, days, group_uni, count, back,prepod_, student_,prepod_name
-    print(message.message_id, "На завтра")
-    if prepod_ == 0:
-        if((days==7 or days==6) and daysnt==2 and count==0):
+async def nextDay(message: types.Message):
+    global week, day, count, back,chooseTeacher, chooseStudent, idGroup, idTeacher
+    if chooseTeacher == 0:
+        if((day==7 or day==6) and week==2 and count==0):
             count+=1
-            daysnt-=1
-        elif ((days==7 or days==6) and daysnt==1 and count==0):
+            week-=1
+        elif ((day==7 or day==6) and week==1 and count==0):
             count+=1
-            daysnt+=1
-        if(days+1==6 or days+1==7):
+            week+=1
+        if(day+1==6 or day+1==7):
             await message.answer(text='🔥Завтра выходной🔥')
             return
-        if days==7:
-            await message.answer(text=await Student.shedul_day(1,daysnt,group_uni),parse_mode='HTML')
+        if day==7:
+            await message.answer(text=await Student.shedulDay(1,week,idTeacher),parse_mode='HTML')
             return
-        await message.answer(text=await Student.shedul_day(days+1,daysnt,group_uni),parse_mode='HTML')
+        await message.answer(text=await Student.shedulDay(day+1,week,idTeacher),parse_mode='HTML')
         await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     else:
-        if((days==7 or days==6) and daysnt==2 and count==0):
+        if((day==7 or day==6) and week==2 and count==0):
             count+=1
-            daysnt-=1
-        elif ((days==7 or days==6) and daysnt==1 and count==0):
+            week-=1
+        elif ((day==7 or day==6) and week==1 and count==0):
             count+=1
-            daysnt+=1
-        if(days+1==6 or days+1==7):
+            week+=1
+        if(day+1==6 or day+1==7):
             await message.answer(text='🔥Завтра выходной🔥')
             return
-        if days==7:
-            await message.answer(text=await Prepod.shedul_day(1,daysnt,prepod_name),parse_mode='HTML')
+        if day==7:
+            await message.answer(text=await Teacher.shedulDay(1,week,idTeacher),parse_mode='HTML')
             return
-        await message.answer(text=await Prepod.shedul_day(days+1,daysnt,prepod_name),parse_mode='HTML')
+        await message.answer(text=await Teacher.shedulDay(day+1,week,idTeacher),parse_mode='HTML')
 
             
 
 @dp.message_handler(lambda message: message.text == "На всю неделю")
 async def now_week(message: types.Message):
-    global daysnt,count,days,prepod_,group_uni,count,prepod_name
-    if(days==7 and daysnt==2 and count==0):
+    global week,count,day,chooseTeacher, idGroup, idTeacher
+    if(day==7 and week==2 and count==0):
             count+=1
-            daysnt-=1
-    elif (days==7 and daysnt==1 and count==0):
+            week-=1
+    elif (day==7 and week==1 and count==0):
             count+=1
-            daysnt+=1
-    if(prepod_==0):
-        await message.answer(text=await Student.shedul_week(daysnt,group_uni),parse_mode="HTML")
+            week+=1
+    if(chooseTeacher==0):
+        await message.answer(text=await Student.shedul_week(week,idGroup),parse_mode="HTML")
     else:
-        await message.answer(text=await Prepod.shedul_week(daysnt,prepod_name),parse_mode="HTML")
+        await message.answer(text=await Teacher.shedulWeek(week,idTeacher),parse_mode="HTML")
     
 @dp.message_handler(lambda message: message.text == "На следующую неделю")
 async def next_week(message: types.Message):
-    global daysnt,count,group_uni,back,prepod_name,prepod_
+    global week,count,back,chooseTeacher, idGroup, idTeacher
 
-    pas=daysnt
+    pas=week
     if(pas==2):
         pas-=1
     else:
         pas+=1
     
-    if(prepod_==0):
-        await message.answer(text=await Student.shedul_week(pas,group_uni),parse_mode="HTML")
+    if(chooseTeacher==0):
+        await message.answer(text=await Student.shedul_week(pas,idGroup),parse_mode="HTML")
     else:
-        await message.answer(text=await Prepod.shedul_week(pas,prepod_name),parse_mode="HTML")
+        await message.answer(text=await Teacher.shedulWeek(pas,idTeacher),parse_mode="HTML")
     
 
 
 
 @dp.message_handler(Text(equals="Настроить рассылку расписания"))
 async def options(message:types.Message):
-    await message.answer(text='Хотите оформить рассылку расписания?', reply_markup=subscribe_b)
+    await message.answer(text='Хотите оформить рассылку расписания?', reply_markup=subscribeButton)
 
 
 
 @dp.message_handler(Text(equals="Назад"))
 async def open_days(message:types.Message):
-    global prepod_
-    back
-    if prepod_==0:
+    global chooseTeacher
+    if chooseTeacher==0:
         if back==0:
-            await Student.back_def(1)
+            await backDef(1)
             await message.answer(text='Вы вернулись обратно', reply_markup=group)
         
         else:
-            await Student.back_def(0)
-            await message.answer(text='Вы вернулись обратно', reply_markup=student)
+            await backDef(0)
+            await message.answer(text='Вы вернулись обратно', reply_markup=people)
     else:
         if back==0:
-            await Prepod.back_def(1)
-            await message.answer(text='Вы вернулись обратно', reply_markup=prepod_name_button)
+            await backDef(1)
+            await message.answer(text='Вы вернулись обратно', reply_markup=teacherNameButton)
         
         else:
-            await Prepod.back_def(0)
-            await message.answer(text='Вы вернулись обратно', reply_markup=student)
+            await backDef(0)
+            await message.answer(text='Вы вернулись обратно', reply_markup=people)
 
 
 
@@ -550,7 +456,7 @@ async def anny_messege(message:types.Message):
     if message.chat.type=='private':
         if not db.user_exists(message.from_user.id):
             db.add_user(message.from_user.id)
-        await bot.send_message(message.from_user.id, text=text,reply_markup=student)
+        await bot.send_message(message.from_user.id, text=text,reply_markup=people)
         
 
 @dp.message_handler(commands=['help'])
@@ -558,28 +464,28 @@ async def help_command_handler(message: types.Message):
     await message.answer("Список команд: /start, /help, /subscribe")
 
 async def schedule_sms():
-    global daysnt, days, group_uni
-    now_1=int(datetime.now().strftime("%H:%M").split(":")[1])
+    global week, day
+    nowDayTime=int(datetime.now().strftime("%H:%M").split(":")[1])
     while True:
     # Получаем текущее время
-        now = datetime.now().strftime("%H:%M")
-        if(now=="18:00"):
+        nowTime = datetime.now().strftime("%H:%M")
+        if(nowTime=="18:00"):
             await Student.sms()
-        await asyncio.sleep(now_1-int(now.split(":")[1]))   
+        await asyncio.sleep(nowDayTime-int(nowTime.split(":")[1]))   
 
 
 
 @dp.callback_query_handler(lambda callback_query: callback_query.data == "subscribe")
 async def subscribe_callback(callback_query: CallbackQuery):
-    global group_uni
-    db.add_user_subscribe(callback_query.from_user.id,1,group_uni)
-    await bot.send_message(chat_id=callback_query.from_user.id, text="Вы согласились на рассылку!\nОжидайте рассылку расписания в 18:00 перед учебным днем!\nНастройки рассылки можно изменить в любой удобный момент через функции чат-бота!",reply_markup=days_nt)
+    global idGroup
+    db.add_user_subscribe(callback_query.from_user.id,1,idGroup)
+    await bot.send_message(chat_id=callback_query.from_user.id, text="Вы согласились на рассылку!\nОжидайте рассылку расписания в 18:00 перед учебным днем!\nНастройки рассылки можно изменить в любой удобный момент через функции чат-бота!",reply_markup=daysSheduleButtonStudent)
     await bot.delete_message(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id)
 
 @dp.callback_query_handler(lambda callback_query: callback_query.data == "not_subscribe")
 async def subscribe_callback(callback_query: CallbackQuery):
     db.del_user_subscribe(callback_query.from_user.id,0)
-    await bot.send_message(chat_id=callback_query.from_user.id, text="Вы отказались от рассылки!",reply_markup=days_nt)
+    await bot.send_message(chat_id=callback_query.from_user.id, text="Вы отказались от рассылки!",reply_markup=daysSheduleButtonStudent)
     await bot.delete_message(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id)
 
 
@@ -590,9 +496,8 @@ async def subscribe_callback(callback_query: CallbackQuery):
 
 
 if __name__ == "__main__":
-    day=date.today()
-    days=day.weekday()+1
-    daysnt=2
+    day=date.today().weekday()+1
+    week=2
     count=0
     loop = asyncio.get_event_loop()
     loop.create_task(schedule_sms())
