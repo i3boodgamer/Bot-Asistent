@@ -80,11 +80,8 @@ class Student:
                         db.set_active(i[0],0)
                         print(f"Пользователь {i[0]} заблокировал чат-бота!: {e}")  
 
-import sqlite3 as sq
-
-
 class Teacher:
-    idTeacher=0
+    
 
     async def infoIDTeacher(nameTeacherBD: str):
           global idTeacher
@@ -203,7 +200,7 @@ async def backDef(h):
 
 async def infoSheduleGroup(group: str,message:types.Message):
     await backDef(0)
-    print(group)
+   
     await Student.infoGroupId(group)
     if db.count_verification(message.from_user.id)==0:
         await message.answer(text="Хотите подписаться на нашу рассылку?", reply_markup=subscribeButton)
