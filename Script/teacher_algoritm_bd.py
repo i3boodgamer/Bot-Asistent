@@ -2,7 +2,7 @@ import sqlite3 as sq
 con=sq.connect("database.db")
 cur=con.cursor()
 
-file1=open("Raspisan_prepod\Буинцев Владимир Николаевич.txt",'r',encoding='utf-8') 
+file1=open("Raspisan_prepod\Четвертков Егор Васильевич.txt",'r',encoding='utf-8') 
 raspos={
     'prepod':0,
     'cht':0,
@@ -14,13 +14,13 @@ raspos={
 }
 fio_prep=file1.readline().strip()
 res_prepod=cur.execute(f'SELECT prepod.ID_prepod FROM prepod WHERE prepod.FIO = "{fio_prep}"').fetchone()
-if(res_prepod!=None):
-    raspos['prepod']=res_prepod[0]
-else:
+if(res_prepod==None):
     cur.execute("INSERT INTO prepod(FIO) VALUES (?)",(fio_prep,))
     con.commit()
     res_prepod=cur.execute(f'SELECT prepod.ID_prepod FROM prepod WHERE prepod.FIO = "{fio_prep}"').fetchone()
-    raspos['prepod']=res_prepod[0]
+    
+raspos['prepod']=res_prepod[0]
+
 
 
 k=0
@@ -97,7 +97,7 @@ while True:
         
         while i<len(mas[5]):
             cur.execute("INSERT INTO object_prepod(prepod_id, week_id, day_id, para_id, time_id, group_id, kab) VALUES (?, ?, ?, ?, ?, ?, ?)",(mas[0],mas[1],mas[2],mas[3],mas[4],mas[5][i],mas[6]))
-            #con.commit()
+            con.commit()
             print(mas[0],mas[1],mas[2],mas[3],mas[4],mas[5][i],mas[6])
             i+=1
         raspos['group'].clear()

@@ -1,40 +1,27 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton,ReplyKeyboardMarkup,KeyboardButton
 
 people=ReplyKeyboardMarkup(resize_keyboard=True)
-b_student=KeyboardButton(text='Я Студент')
-b_prepod=KeyboardButton(text='Я Преподаватель')
+b_student=KeyboardButton(text='Я Студент 👩‍🎓')
+b_prepod=KeyboardButton(text='Я Преподаватель 👨‍🏫')
 
 people.add(b_student,b_prepod)
 
 group=ReplyKeyboardMarkup(resize_keyboard=True)
-group_In_21=KeyboardButton(text='ИЭ-21')
-group_IVT_211=KeyboardButton(text='ИВТ-211')
-group_IVT_212=KeyboardButton(text='ИВТ-212')
-group_IC_211=KeyboardButton(text='ИС-211')
-group_IC_212=KeyboardButton(text='ИС-212')
-group_IPMI_21=KeyboardButton(text='ИПМИ-21')
-group_IP_21=KeyboardButton(text='ИП-21')
-group_IAT_21=KeyboardButton(text='ИАТ-21')
+group_In_21=KeyboardButton(text='ИЭ-21',callback_data='ИЭ-21')
+group_IVT_211=KeyboardButton(text='ИВТ-211',callback_data='ИВТ-211')
+group_IVT_212=KeyboardButton(text='ИВТ-212',callback_data='ИВТ-212')
+group_IC_211=KeyboardButton(text='ИС-211',callback_data='ИС-211')
+group_IC_212=KeyboardButton(text='ИС-212',callback_data='ИС-212')
+group_IPMI_21=KeyboardButton(text='ИПМИ-21',callback_data='ИПМИ-21')
+group_IP_21=KeyboardButton(text='ИП-21',callback_data='ИП-21')
+group_IAT_21=KeyboardButton(text='ИАТ-21',callback_data='ИАТ-21')
 back=KeyboardButton(text='Назад')
 but_group=[[group_In_21],[group_IVT_212],[group_IVT_211],[group_IC_211],[group_IC_212],[group_IPMI_21],[group_IP_21],[group_IAT_21],[back]]
 group=ReplyKeyboardMarkup(keyboard=but_group,resize_keyboard=True)
 
 
-institut=InlineKeyboardMarkup()
-ITiAS=InlineKeyboardButton(text="ИТиАС", callback_data="ITiAS")
-institut.add(ITiAS)
 
-group_in=InlineKeyboardMarkup()
-group_In_21_in=InlineKeyboardButton(text='ИЭ-21')
-group_IVT_211_in=InlineKeyboardButton(text='ИВТ-211',callback_data="IVT-211")
-group_IVT_212_in=InlineKeyboardButton(text='ИВТ-212',callback_data="IVT_212")
-group_IC_211_in=InlineKeyboardButton(text='ИС-211',callback_data="IC_211")
-group_IC_212_in=InlineKeyboardButton(text='ИС-212',callback_data="IC_212")
-group_IPMI_21_in=InlineKeyboardButton(text='ИПМИ-21',callback_data="IPMI_21")
-group_IP_21_in=InlineKeyboardButton(text='ИП-21',callback_data="IP_21")
-group_IAT_21_in=InlineKeyboardButton(text='ИАТ-21',callback_data="IAT_21")
-but_group_in=(group_IVT_212_in,group_IVT_211_in,group_IC_211_in,group_IC_212_in,group_IPMI_21_in,group_IP_21_in,group_IAT_21_in)
-group_in.add(but_group_in)
+
 
 pn=KeyboardButton(text='На сегодня')
 vt=KeyboardButton(text='На завтра')
