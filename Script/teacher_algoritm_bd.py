@@ -1,8 +1,9 @@
 import sqlite3 as sq
-con=sq.connect("database.db")
+
+con=sq.connect("C:/Users/ignat/Desktop/Projec/DataBase/database.db")
 cur=con.cursor()
 
-file1=open("Raspisan_prepod\Четвертков Егор Васильевич.txt",'r',encoding='utf-8') 
+file1=open("Raspisan_Teacher\Гусев Максим Михайлович.txt",'r',encoding='utf-8') 
 raspos={
     'prepod':0,
     'cht':0,

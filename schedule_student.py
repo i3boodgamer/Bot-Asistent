@@ -1,6 +1,7 @@
 import sqlite3 as sq
-from Bot.token_1 import db
-from Class.days_week import day_week
+from token_1 import db
+from days_week import day_week
+from config import DATABASE
 
 class Student(day_week):
     def __init__(self, day: int, week: int, idStudent:int):
@@ -14,7 +15,7 @@ class Student(day_week):
     
    
     async def shedul_week(self):
-        with sq.connect("C:/Users/ignat/Desktop/Projec/DataBase/database.db") as con:
+        with sq.connect(DATABASE) as con:
             cur=con.cursor()
             text=cur.execute(f"""SELECT days.day, object.para_id,object.object, object.kabinet,object.time_id,object.people
             FROM groups_uni,week,days
@@ -41,7 +42,7 @@ class Student(day_week):
     
 
     async def shedulDay(self):
-        with sq.connect("C:/Users/ignat/Desktop/Projec/DataBase/database.db") as con:
+        with sq.connect(DATABASE) as con:
             cur=con.cursor()
             if(self.day==6 or self.day==7):
                 return "🔥Завтра выходной🔥"

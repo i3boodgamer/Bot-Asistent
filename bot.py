@@ -2,13 +2,13 @@ import asyncio
 from aiogram import types,executor
 from aiogram.dispatcher.filters import Text
 from aiogram.types import CallbackQuery
-from Bot.button import group, people,daysSheduleButtonStudent,subscribeButton,teacherNameButton,daysSheduleButtonTeacher
+from button import group, people,daysSheduleButtonStudent,subscribeButton,teacherNameButton,daysSheduleButtonTeacher
 from datetime import date
+from mailing import mailing
+from schedule_student import Student
+from schedule_teacher import Teacher
+from token_1 import bot, dp, db
 
-from Class.mailing import mailing
-from Class.schedule_student import Student
-from Class.schedule_teacher import Teacher
-from Bot.token_1 import bot,db,dp
 
 
 
@@ -16,8 +16,6 @@ from Bot.token_1 import bot,db,dp
 async def backDef(backCount,message: types.Message):
         db.update_back(backCount,message.from_user.id)
 
-
-# 
 async def infoSheduleGroup(nameGroups: str,message: types.Message):
     await backDef(0,message)
     await Student(day,week,message.from_user.id).infoGroupId(nameGroups)
@@ -88,6 +86,18 @@ async def open_rasp_prepod(message:types.Message):
 @dp.message_handler(Text(equals="Четвертков Е. В."))
 async def open_rasp_prepod(message:types.Message):
     await infoSheduleTeacher("Четвертков Егор Васильевич",message)
+
+@dp.message_handler(Text(equals="Бабичева Н. Б."))
+async def open_rasp_prepod(message:types.Message):
+    await infoSheduleTeacher("Бабичева Надежда Борисовна",message)
+
+@dp.message_handler(Text(equals="Ермакова Л. А."))
+async def open_rasp_prepod(message:types.Message):
+    await infoSheduleTeacher("Ермакова Людмила Александровна",message)
+
+@dp.message_handler(Text(equals="Гусев М. М."))
+async def open_rasp_prepod(message:types.Message):
+    await infoSheduleTeacher("Гусев Максим Михайлович",message)
     
 
 #Группы
@@ -223,7 +233,7 @@ async def open_days(message:types.Message):
 
 @dp.message_handler(commands=['start'])
 async def anny_messege(message:types.Message):
-    text="Привет! Ты студент или преподаватель СибГиу? Этот бот станет вашим спутником жизни в университете.\n""\n""Здесь Вы можете получать информацию о расписании занятий на текущий день, на неделю и на любой другой желаемый день в удобном формате. Также вы можете оформить подписку на ежедневную рассылку расписания.\n""\n""Здесь нет необходимости ломать голову насчет того, какая неделя тебя ждет, четная или нечетная.\n\nВыбирай нужные кнопки и вливайся в жизнь первого ВУЗа Кузбасса!\n""\n""Проект выполнен студентами группы ИВТ-211\n""Команда: KIB.org"
+    text="Привет! Ты студент или преподаватель СибГИУ? Этот бот станет вашим спутником жизни в университете.\n""\n""Здесь Вы можете получать информацию о расписании занятий на текущий день, на неделю. Также вы можете оформить подписку на ежедневную рассылку расписания.\n""\n""Здесь нет необходимости ломать голову насчет того, какая неделя тебя ждет, четная или нечетная.\n\nВыбирай нужные кнопки и вливайся в жизнь первого ВУЗа Кузбасса!\n""\n""Проект выполнен студентами группы ИВТ-211\n""Команда: KIB.org"
     if message.chat.type=='private':
         if not db.user_exists(message.from_user.id):
             db.add_user(message.from_user.id)
@@ -260,7 +270,7 @@ async def subscribe_callback(callback_query: CallbackQuery):
 if __name__ == "__main__":
     
     day=date.today().weekday()+1
-    week=2
+    week=1
     loop = asyncio.get_event_loop()
     loop.create_task(mailing(day,week).schedule_sms())
     executor.start_polling(dp, skip_updates=True,loop=loop)

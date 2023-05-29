@@ -1,0 +1,1 @@
+DATABASE="C:/Users/ignat/Desktop/Projec/DataBase/database.db"

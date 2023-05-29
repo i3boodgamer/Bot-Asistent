@@ -2,12 +2,12 @@ import asyncio
 from aiogram import types,executor
 from aiogram.dispatcher.filters import Text
 from aiogram.types import CallbackQuery
-from Bot.button import group, people,daysSheduleButtonStudent,subscribeButton,teacherNameButton,daysSheduleButtonTeacher
+from button import group, people,daysSheduleButtonStudent,subscribeButton,teacherNameButton,daysSheduleButtonTeacher
 from datetime import date
-from Bot.token_1 import bot,db,dp
-from Class.mailing import mailing
-from Class.schedule_student import Student
-from Class.schedule_teacher import Teacher
+from token_1 import bot,db,dp
+from mailing import mailing
+from schedule_student import Student
+from schedule_teacher import Teacher
 
 
 
