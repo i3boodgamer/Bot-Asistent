@@ -75,9 +75,7 @@ while True:
                     if((cur.execute(f'SELECT groups_uni.group_id FROM groups_uni WHERE groups_uni.groups_uni = "{group_id[i]}"').fetchone()) is None):
                         cur.execute("INSERT INTO groups_uni(groups_uni) VALUES (?)",(group_id[i],))
                         con.commit()
-                        result_id.append((cur.execute(f'SELECT groups_uni.group_id FROM groups_uni WHERE groups_uni.groups_uni = "{group_id[i]}"').fetchone())[0])
-                    else:
-                        result_id.append((cur.execute(f'SELECT groups_uni.group_id FROM groups_uni WHERE groups_uni.groups_uni = "{group_id[i]}"').fetchone())[0])
+                    result_id.append((cur.execute(f'SELECT groups_uni.group_id FROM groups_uni WHERE groups_uni.groups_uni = "{group_id[i]}"').fetchone())[0])
                     i+=1
                     raspos['group']=result_id
                     
